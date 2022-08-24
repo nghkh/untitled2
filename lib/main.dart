@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget buildAppBar() {
     return Row(
       children: [
-        Text(
+        const Text(
           'Thông báo',
           style: TextStyle(
             fontSize: 28,
@@ -67,12 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
             color: Colors.black,
           ),
         ),
-        Expanded(
+        const Expanded(
           child: SizedBox(),
         ),
         IconButton(
           onPressed: () {},
-          icon: Icon(Icons.search),
+          icon: const Icon(Icons.search),
         ),
       ],
     );
@@ -82,20 +82,52 @@ class _MyHomePageState extends State<MyHomePage> {
     return FutureBuilder(
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.none &&
-            snapshot.hasData == null) {
-          return SizedBox();
+            snapshot.hasError) {
+          return const SizedBox();
         }
         return ListView.separated(
           itemBuilder: (context, index) {
             return Row(
               children: [
-                Stack(),
-                Column(),
-                Icon(Icons.more_horiz),
+                Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(28.0),
+                      child: Image.network(
+                        '${responseNotification.data![index].image}',
+                        width: 56,
+                        height: 56,
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14.0),
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(text: TextSpan(
+                      children: [
+                        TextSpan(text: responseNotification.data![index].message),
+                      ]
+                    ),)
+                  ],
+                ),
+                const Icon(Icons.more_horiz),
               ],
             );
           },
-          separatorBuilder: (context, index) => SizedBox(),
+          separatorBuilder: (context, index) => const SizedBox(),
           itemCount: responseNotification.data!.length,
         );
       },
