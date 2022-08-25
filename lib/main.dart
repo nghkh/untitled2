@@ -32,10 +32,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<ResponseNotification> notification() async {
+
+
+  Future<List<DataNotification>?> notification() async {
     GetData ret = GetData();
     var responseApi = await ret.getToken();
-    return responseNotification = ResponseNotification(responseApi);
+    ResponseNotification responseNotification = ResponseNotification(responseApi);
+    return responseNotification.datares;
   }
 
   @override
@@ -79,13 +82,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget buildListNotification() {
-    return FutureBuilder(
+    return FutureBuilder<List<DataNotification>?>(
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.none &&
             snapshot.hasError) {
           return const SizedBox();
         }
         return ListView.separated(
+          shrinkWrap: true,
           itemBuilder: (context, index) {
             return Row(
               children: [
@@ -94,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(28.0),
                       child: Image.network(
-                        '${responseNotification.data![index].image}',
+                        '${snapshot.data?[index].image}',
                         width: 56,
                         height: 56,
                       ),
@@ -116,11 +120,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(text: TextSpan(
-                      children: [
-                        TextSpan(text: responseNotification.data![index].message),
-                      ]
-                    ),)
+                    RichText(
+                      text: TextSpan(
+                          children: snapshot.data?.map((e) {
+                        if (e.listHighlight[index].type ==
+                            HighlightEnum.normal) {
+                          return TextSpan(
+                            text: e.listHighlight[index].str,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                            ),
+                          );
+                        }
+                        return TextSpan(
+                          text: e.listHighlight[index].str,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),
+                        );
+                      }).toList()),
+                    )
                   ],
                 ),
                 const Icon(Icons.more_horiz),
@@ -128,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           },
           separatorBuilder: (context, index) => const SizedBox(),
-          itemCount: responseNotification.data!.length,
+          itemCount: snapshot.data!.length,
         );
       },
       future: notification(),

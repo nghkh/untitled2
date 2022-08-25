@@ -2,13 +2,13 @@
 
 class ResponseNotification {
   final response;
-  List<DataNotification>? data;
+  List<DataNotification>? datares;
 
   ResponseNotification(this.response) {
     List responseData = response['data'];
 
     for (var element in responseData) {
-      data?.add(DataNotification(
+      datares?.add(DataNotification(
         message: element['body'],
         image: element['image'],
         icon: element['icon'],
